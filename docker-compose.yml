@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: user_postgres
+      POSTGRES_PASSWORD: pass_postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  nodejs:
+    build: .
+    container_name: node-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://user_postgres:pass_postgres@postgres:5432/learn_backend_course
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
